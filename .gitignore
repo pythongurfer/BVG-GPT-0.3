@@ -12,3 +12,5 @@ venv/
 .venv/
 
 _data_loader.py
+
+env
