@@ -1,0 +1,52 @@
+# Advanced Retrieval-Augmented Generation Pipeline
+
+![Project Demo](assets/demo.gif)
+
+## 1. Abstract
+
+This project implements an advanced Retrieval-Augmented Generation (RAG) pipeline designed to deliver highly accurate, context-aware answers from a private knowledge base. The architecture moves beyond basic semantic search by integrating a multi-stage retrieval process that includes hybrid search and a re-ranking layer. This approach significantly mitigates common failure modes of simpler systems, ensuring that the context provided to the final language model is of the highest possible relevance and precision.
+
+The following sections provide a detailed analysis of the core search technologies, their practical applications within the German market, and a transparent discussion of their respective technical and financial implications.
+
+---
+
+## 2. Core Concepts: A Comparative Analysis of Search Strategies
+
+The effectiveness of a RAG system is fundamentally determined by the quality of its retrieval stage. Understanding the trade-offs between different retrieval methods is essential for designing a robust solution.
+
+### 2.1. Lexical Search (Keyword-Based)
+
+Lexical search, exemplified by algorithms like BM25, is a classic Information Retrieval technique. It operates by matching the specific keywords present in a user's query with their frequency and distribution within a corpus of documents.
+
+* **Core Strength:** Unmatched precision and speed when the query uses the exact terminology found in the source documents. It is highly reliable for finding specific names, codes, legal terms, or part numbers.
+* **Fundamental Limitation:** It has no understanding of semantics or intent. It cannot comprehend synonyms, related concepts, or paraphrased queries. A search for "vehicle" will not find documents that only mention "car."
+
+### 2.2. Semantic Search (Vector-Based)
+
+Semantic search utilizes deep learning models (Transformers) to convert both the query and the documents into numerical representations called embeddings. The search is then performed by finding the documents whose embeddings are closest to the query's embedding in a high-dimensional vector space.
+
+* **Core Strength:** An exceptional ability to understand user intent, context, and semantic relationships. It can find relevant information even when the query uses entirely different words from the source document (e.g., matching "yearly pass" to "annual subscription").
+* **Fundamental Limitation:** It can sometimes be imprecise. It may retrieve documents that are thematically related but factually incorrect, or it might overlook a document with a crucial keyword if the document's overall semantic context is not the closest match.
+
+### 2.3. Hybrid Search (Combined Approach)
+
+Hybrid search is a sophisticated technique that combines the outputs of both lexical and semantic search. By fusing the scores from both methods, it leverages the precision of keyword matching while simultaneously benefiting from the contextual understanding of vector search.
+
+* **Core Strength:** Fault tolerance and robustness. It creates a system that is significantly more effective than the sum of its parts. It mitigates the weaknesses of each individual method, ensuring that both exact terms and user intent are accounted for, leading to a superior set of initial retrieval candidates.
+
+---
+
+## 3. Technical and Business Analysis in the German Context
+
+The choice of search architecture has direct consequences on performance, cost, and suitability for specific platforms. The following table outlines these considerations with examples relevant to the German market.
+
+| Aspect                  | Lexical Search (e.g., BM25)                                                                                             | Semantic Search (e.g., Vector DB)                                                                                                   | Hybrid Search + Re-ranking                                                                                                                              |
+| :---------------------- | :---------------------------------------------------------------------------------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **Core Principle** | Keyword frequency and matching.                                                                                         | Conceptual and contextual similarity.                                                                                               | Combination of keyword precision and semantic understanding, refined by a powerful second-stage model.                                                |
+| **Ideal Use Case** | Searching for specific, unambiguous terms.                                                                              | Discovering information based on natural language, intent, or vague queries.                                                        | Answering complex questions that require both understanding intent and locating specific factual details.                                             |
+| **German Platforms** | **`Bundesanzeiger`, `dejure.org`**: Legal and official publication portals where exact legal terminology is non-negotiable.<br>**Internal Contract Management**: Finding specific clauses or contract numbers. | **`Zalando`, `Otto.de`**: E-commerce search for queries like "warme Jacke für den Winter".<br>**`DB` / `Telekom` Chatbots**: Understanding customer support requests in natural language. | **`SAP` / `Siemens` Knowledge Bases**: Empowering engineers to find technical solutions by understanding the problem and locating specific part numbers or error codes. |
+| **Latency** | **Very Low.** Mature, highly optimized algorithms.                                                                        | **Medium.** Vector similarity search is computationally intensive. Requires specialized databases for acceptable performance at scale.      | **High.** Involves executing two search queries, fusing the results, and then making an additional (often network-bound) call to a re-ranking model. |
+| **Infrastructure Cost** | **Low.** Can be run efficiently on CPU-based infrastructure using established open-source software like Elasticsearch or OpenSearch. | **Medium to High.** Requires GPU resources for embedding generation and a specialized vector database (e.g., Pinecone, Milvus) which can be costly to run or license. | **Highest.** Combines the costs of both lexical and semantic systems, plus the significant cost of a re-ranking API or self-hosting a large cross-encoder model on dedicated GPUs. |
+| **Edge Cases & Failures** | - Fails on synonyms (`Kündigung` vs. `Aufhebungsvertrag`).<br>- Fails on typos or grammatical variations.<br>- Cannot answer conceptual questions. | - Can miss critical keywords if semantic context points elsewhere.<br>- May retrieve thematically related but factually incorrect results.<br>- Struggles with out-of-domain terms. | - Increased complexity in architecture and maintenance.<br>- Tuning the fusion algorithm can be challenging.<br>- Latency can be a significant issue for real-time applications. |
+
+---

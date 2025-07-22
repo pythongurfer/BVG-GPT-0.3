@@ -1,0 +1,14 @@
+# .gitignore
+
+# Archivo de entorno con secretos
+.env
+
+# Carpetas de cache de Python
+__pycache__/
+*.pyc
+
+# Carpetas de entorno virtual (ej. venv, .venv)
+venv/
+.venv/
+
+_data_loader.py
